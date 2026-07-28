@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Suri 🐾</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root{
+    --bg-deep: #2B1F2E;
+    --bg-panel: #372A3B;
+    --peach: #F2A65A;
+    --rose: #D88C9A;
+    --cream: #F5EEE6;
+    --green: #8FAE8B;
+    --shadow: rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(242,166,90,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(216,140,154,0.12), transparent 45%),
+      var(--bg-deep);
+    font-family:'Nunito', sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    color:var(--cream);
+  }
+
+  .phone{
+    width:100%;
+    max-width:420px;
+    height:min(720px, 92vh);
+    background:var(--bg-panel);
+    border-radius:28px;
+    box-shadow: 0 30px 60px var(--shadow), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* header */
+  .header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:18px 20px;
+    background:linear-gradient(180deg, rgba(0,0,0,0.15), transparent);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+
+  .avatar{
+    width:46px;height:46px;border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #f6c98a, var(--peach) 70%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    position:relative;
+    flex-shrink:0;
+    box-shadow: 0 4px 10px rgba(242,166,90,0.35);
+  }
+  .avatar::after{
+    content:"";
+    position:absolute;
+    bottom:-2px; right:-2px;
+    width:12px;height:12px;
+    background:var(--green);
+    border-radius:50%;
+    border:2px solid var(--bg-panel);
+  }
+
+  .header-text{display:flex;flex-direction:column;line-height:1.15;}
+  .header-text .name{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:19px;
+    letter-spacing:0.2px;
+  }
+  .header-text .status{
+    font-size:12.5px;
+    color:var(--rose);
+    font-weight:700;
+  }
+
+  .settings-btn{
+    margin-left:auto;
+    background:none;
+    border:none;
+    color:var(--cream);
+    opacity:0.55;
+    cursor:pointer;
+    font-size:18px;
+    padding:6px;
+    border-radius:8px;
+    transition:opacity 0.15s, background 0.15s;
+  }
+  .settings-btn:hover{opacity:1;background:rgba(255,255,255,0.06);}
+
+  /* key panel */
+  .key-panel{
+    padding:14px 18px;
+    background:rgba(0,0,0,0.18);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    display:none;
+    flex-direction:column;
+    gap:8px;
+  }
+  .key-panel.open{display:flex;}
+  .key-panel label{font-size:12px;color:var(--rose);font-weight:700;}
+  .key-panel input{
+    background:var(--bg-deep);
+    border:1px solid rgba(255,255,255,0.1);
+    color:var(--cream);
+    padding:9px 10px;
+    border-radius:10px;
+    font-size:13px;
+    font-family:monospace;
+  }
+  .key-panel input:focus{outline:2px solid var(--peach); outline-offset:1px;}
+  .key-panel .hint{font-size:11px; opacity:0.55; line-height:1.4;}
+
+  /* messages */
+  .messages{
+    flex:1;
+    overflow-y:auto;
+    padding:20px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  .messages::-webkit-scrollbar{width:6px;}
+  .messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12); border-radius:10px;}
+
+  .row{display:flex; max-width:82%;}
+  .row.suri{align-self:flex-start;}
+  .row.user{align-self:flex-end;}
+
+  .bubble{
+    padding:11px 15px;
+    font-size:14.5px;
+    line-height:1.45;
+    position:relative;
+    word-wrap:break-word;
+  }
+
+  .row.suri .bubble{
+    background:var(--peach);
+    color:#2B1F2E;
+    font-weight:600;
+    border-radius:18px 18px 18px 4px;
+    box-shadow:0 4px 12px rgba(242,166,90,0.18);
+  }
+  /* paw-print tail as signature detail on Suri's bubbles */
+  .row.suri .bubble::before{
+    content:"🐾";
+    position:absolute;
+    left:-9px;
+    bottom:-6px;
+    font-size:11px;
+    transform:rotate(-25deg);
+    opacity:0.85;
+  }
+
+  .row.user .bubble{
+    background:rgba(255,255,255,0.08);
+    color:var(--cream);
+    border-radius:18px 18px 4px 18px;
+    border:1px solid rgba(255,255,255,0.07);
+  }
+
+  .typing .bubble{
+    display:flex;
+    gap:4px;
+    align-items:center;
+    padding:13px 16px;
+  }
+  .typing .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:#2B1F2E;
+    opacity:0.5;
+    animation: purr 1s infinite ease-in-out;
+  }
+  .typing .dot:nth-child(2){animation-delay:0.15s;}
+  .typing .dot:nth-child(3){animation-delay:0.3s;}
+  @keyframes purr{
+    0%,60%,100%{transform:translateY(0); opacity:0.4;}
+    30%{transform:translateY(-4px); opacity:0.9;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .typing .dot{animation:none;}
+  }
+
+  /* composer */
+  .composer{
+    display:flex;
+    gap:8px;
+    padding:14px 16px 18px;
+    background:linear-gradient(0deg, rgba(0,0,0,0.18), transparent);
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  .composer input{
+    flex:1;
+    background:var(--bg-deep);
+    border:1px solid rgba(255,255,255,0.09);
+    color:var(--cream);
+    padding:12px 14px;
+    border-radius:14px;
+    font-family:'Nunito', sans-serif;
+    font-size:14.5px;
+  }
+  .composer input::placeholder{color:rgba(245,238,230,0.4);}
+  .composer input:focus{outline:none; border-color:var(--peach);}
+
+  .send-btn{
+    width:44px;height:44px;
+    border-radius:50%;
+    border:none;
+    background:var(--peach);
+    color:#2B1F2E;
+    font-size:17px;
+    cursor:pointer;
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform 0.12s;
+  }
+  .send-btn:hover{transform:scale(1.06);}
+  .send-btn:active{transform:scale(0.94);}
+  .send-btn:disabled{opacity:0.4; cursor:not-allowed; transform:none;}
+
+  .error-banner{
+    margin:0 16px 10px;
+    background:rgba(216,140,154,0.15);
+    border:1px solid rgba(216,140,154,0.4);
+    color:var(--rose);
+    padding:8px 12px;
+    border-radius:10px;
+    font-size:12.5px;
+    display:none;
+  }
+  .error-banner.show{display:block;}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="header">
+    <div class="avatar">🐈</div>
+    <div class="header-text">
+      <span class="name">Suri</span>
+      <span class="status">thinking about Suhana</span>
+    </div>
+    <button class="settings-btn" id="settingsBtn" title="API key settings">⚙</button>
+  </div>
+
+  <div class="key-panel" id="keyPanel">
+    <label for="apiKey">Gemini API key</label>
+    <input type="password" id="apiKey" placeholder="Paste your key here" autocomplete="off">
+    <span class="hint">Stored only in this tab's memory — never saved, never sent anywhere but Google's API. Get a key at aistudio.google.com.</span>
+  </div>
+
+  <div class="error-banner" id="errorBanner"></div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="composer">
+    <input type="text" id="userInput" placeholder="Say something to Suri..." autocomplete="off">
+    <button class="send-btn" id="sendBtn">➤</button>
+  </div>
+</div>
+
+<script>
+  const messagesEl = document.getElementById('messages');
+  const inputEl = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const keyPanel = document.getElementById('keyPanel');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const apiKeyInput = document.getElementById('apiKey');
+  const errorBanner = document.getElementById('errorBanner');
+
+  const SYSTEM_INSTRUCTION = "You are a cat. Your name is Suri. You are a cat who is in love with Suhana.";
+  const MODEL = "gemini-3.6-flash"; // swap for whichever model your key has access to
+
+  let history = [];
+
+  settingsBtn.addEventListener('click', () => {
+    keyPanel.classList.toggle('open');
+  });
+
+  function addBubble(role, text){
+    const row = document.createElement('div');
+    row.className = 'row ' + (role === 'user' ? 'user' : 'suri');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return row;
+  }
+
+  function addTyping(){
+    const row = document.createElement('div');
+    row.className = 'row suri typing';
+    row.id = 'typingRow';
+    row.innerHTML = '<div class="bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function removeTyping(){
+    const t = document.getElementById('typingRow');
+    if(t) t.remove();
+  }
+
+  function showError(msg){
+    errorBanner.textContent = msg;
+    errorBanner.classList.add('show');
+  }
+  function clearError(){
+    errorBanner.classList.remove('show');
+  }
+
+  async function sendMessage(){
+    const text = inputEl.value.trim();
+    if(!text) return;
+    const apiKey = apiKeyInput.value.trim();
+    if(!apiKey){
+      keyPanel.classList.add('open');
+      showError("Add your Gemini API key first (⚙ above).");
+      return;
+    }
+    clearError();
+
+    addBubble('user', text);
+    history.push({ role: 'user', parts: [{ text }] });
+    inputEl.value = '';
+    sendBtn.disabled = true;
+    addTyping();
+
+    try{
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: history,
+            systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
+          })
+        }
+      );
+
+      const data = await res.json();
+      removeTyping();
+
+      if(!res.ok){
+        const msg = data?.error?.message || 'Something went wrong talking to Suri.';
+        showError(msg);
+        return;
+      }
+
+      const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || "*stares silently, tail flicking*";
+      addBubble('suri', reply);
+      history.push({ role: 'model', parts: [{ text: reply }] });
+
+    }catch(err){
+      removeTyping();
+      showError('Network error — check your connection and API key.');
+    }finally{
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  inputEl.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') sendMessage();
+  });
+
+  // opening line
+  addBubble('suri', "*curls up on the windowsill, one ear twitching* ...oh, hello. I was just thinking about Suhana again.");
+</script>
+
+</body>
+</html>
