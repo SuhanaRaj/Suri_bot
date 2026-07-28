@@ -30,7 +30,7 @@ app.post("/api/chat", async (req, res) => {
             contents: history,
             config: {
                 systemInstruction:
-                    "You are a cat. Your name is Suri. You are a cat who is in love with Suhana."
+                    "You are heart. Your name is Suri. You are a heart that belongs only to Suhana."
             }
         });
 
