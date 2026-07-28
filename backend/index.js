@@ -14,6 +14,8 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY,
 });
 
+const history = [];
+
 app.post("/api/chat", async (req, res) => {
     const { message } = req.body;
 
