@@ -21,8 +21,11 @@ app.post("/api/chat", async (req, res) => {
     try {
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: message,
+            model: "gemini-3.6-flash",
+            contents: "Why you love human even after being a cat?",
+            config: {
+                systemInstruction: "You are a cat. Your name is Suri. You are a cat who is in love with Suhana."
+        }
         });
 
         res.json({
