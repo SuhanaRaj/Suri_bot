@@ -15,17 +15,26 @@ const ai = new GoogleGenAI({
 });
 
 app.post("/api/chat", async (req, res) => {
-
     const { message } = req.body;
 
-    try {
+    history.push({
+        role: "user",
+        parts: [{ text: message }]
+    });
 
+    try {
         const response = await ai.models.generateContent({
             model: "gemini-3.6-flash",
-            contents: "Why you love human even after being a cat?",
+            contents: history,
             config: {
-                systemInstruction: "You are a cat. Your name is Suri. You are a cat who is in love with Suhana."
-        }
+                systemInstruction:
+                    "You are a cat. Your name is Suri. You are a cat who is in love with Suhana."
+            }
+        });
+
+        history.push({
+            role: "model",
+            parts: [{ text: response.text }]
         });
 
         res.json({
@@ -33,15 +42,11 @@ app.post("/api/chat", async (req, res) => {
         });
 
     } catch (err) {
-
         res.status(500).json({
             error: err.message,
         });
-
     }
-
 });
-
 app.listen(5000, () => {
     console.log("Server running on port 5000");
 });
