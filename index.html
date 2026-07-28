@@ -262,12 +262,6 @@
     <button class="settings-btn" id="settingsBtn" title="API key settings">⚙</button>
   </div>
 
-  <div class="key-panel" id="keyPanel">
-    <label for="apiKey">Gemini API key</label>
-    <input type="password" id="apiKey" placeholder="Paste your key here" autocomplete="off">
-    <span class="hint">Stored only in this tab's memory — never saved, never sent anywhere but Google's API. Get a key at aistudio.google.com.</span>
-  </div>
-
   <div class="error-banner" id="errorBanner"></div>
 
   <div class="messages" id="messages"></div>
@@ -282,19 +276,11 @@
   const messagesEl = document.getElementById('messages');
   const inputEl = document.getElementById('userInput');
   const sendBtn = document.getElementById('sendBtn');
-  const keyPanel = document.getElementById('keyPanel');
-  const settingsBtn = document.getElementById('settingsBtn');
-  const apiKeyInput = document.getElementById('apiKey');
   const errorBanner = document.getElementById('errorBanner');
 
-  const SYSTEM_INSTRUCTION = "You are a cat. Your name is Suri. You are a cat who is in love with Suhana.";
-  const MODEL = "gemini-3.6-flash"; // swap for whichever model your key has access to
+  // const SYSTEM_INSTRUCTION = "You are a cat. Your name is Suri. You are a cat who is in love with Suhana.";
+  // const MODEL = "gemini-3.6-flash"; // swap for whichever model your key has access to
 
-  let history = [];
-
-  settingsBtn.addEventListener('click', () => {
-    keyPanel.classList.toggle('open');
-  });
 
   function addBubble(role, text){
     const row = document.createElement('div');
@@ -330,65 +316,87 @@
     errorBanner.classList.remove('show');
   }
 
-  async function sendMessage(){
+  async function sendMessage() {
+
     const text = inputEl.value.trim();
-    if(!text) return;
-    const apiKey = apiKeyInput.value.trim();
-    if(!apiKey){
-      keyPanel.classList.add('open');
-      showError("Add your Gemini API key first (⚙ above).");
-      return;
-    }
+
+    if (!text) return;
+
     clearError();
 
     addBubble('user', text);
-    history.push({ role: 'user', parts: [{ text }] });
+
     inputEl.value = '';
+
     sendBtn.disabled = true;
+
     addTyping();
 
-    try{
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: history,
-            systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
-          })
+    try {
+
+        const response = await fetch("http://localhost:5000/api/chat", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                message: text
+            })
+
+        });
+
+        const data = await response.json();
+
+        removeTyping();
+
+        if (!response.ok) {
+
+            showError(data.error || "Something went wrong.");
+
+            return;
+
         }
-      );
 
-      const data = await res.json();
-      removeTyping();
+        addBubble('suri', data.reply);
 
-      if(!res.ok){
-        const msg = data?.error?.message || 'Something went wrong talking to Suri.';
-        showError(msg);
-        return;
-      }
-
-      const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || "*stares silently, tail flicking*";
-      addBubble('suri', reply);
-      history.push({ role: 'model', parts: [{ text: reply }] });
-
-    }catch(err){
-      removeTyping();
-      showError('Network error — check your connection and API key.');
-    }finally{
-      sendBtn.disabled = false;
-      inputEl.focus();
     }
-  }
 
-  sendBtn.addEventListener('click', sendMessage);
-  inputEl.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter') sendMessage();
-  });
+    catch (err) {
 
-  // opening line
-  addBubble('suri', "*curls up on the windowsill, one ear twitching* ...oh, hello. I was just thinking about Suhana again.");
+        removeTyping();
+
+        showError("Cannot connect to backend.");
+
+    }
+
+    finally {
+
+        sendBtn.disabled = false;
+
+        inputEl.focus();
+
+    }
+
+}
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    inputEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
+    });
+
+    // Opening message
+    addBubble(
+        "suri",
+        "*curls up on the windowsill, one ear twitching* ...oh, hello. I was just thinking about Suhana again."
+    );
+
+
 </script>
 
 </body>
